@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Launchpad — SWE Interview Prep
 
-## Getting Started
+A study companion for landing a software-engineering role: it organizes your plan, drives daily practice with **spaced repetition**, and tracks your progress — all behind a clean, calm interface.
 
-First, run the development server:
+> Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Supabase
+
+## Features
+
+- 🔐 **Passwordless magic-link auth** (Supabase) with per-user data isolation via Row-Level Security
+- 🗺️ **Interactive 12-week roadmap** — checkable tasks, persisted per user
+- 🧩 **DSA log with SM-2 spaced repetition** — solved problems resurface for review right before you'd forget them
+- ⏱️ **Flexible Pomodoro timer** (presets + custom length) that logs focus sessions
+- 📝 **Dated, topic-tagged notes** — preview cards open into a full editor (edit / delete)
+- ⚙️ **Profile & preferences** — display name, target date, Pomodoro config
+- 🌗 **Calm, minimal design system** — light/dark themes, collapsible sidebar, semantic design tokens
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router) + React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 (CSS-first design tokens) |
+| Backend | Supabase — Postgres, Auth, Row-Level Security |
+| Hosting | Vercel |
+
+## Getting started
 
 ```bash
+# 1. Install
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# then fill NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+# (Supabase dashboard → Project Settings → API)
+
+# 3. Run
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, in your Supabase project:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **SQL Editor** — run `supabase/migrations/0001_init.sql`, then `supabase/migrations/0002_note_entries.sql`.
+2. **Authentication → URL Configuration** — set **Site URL** to `http://localhost:3000` and add the redirect `http://localhost:3000/**`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/(app)/          protected routes: dashboard, learn, practice, dsa, roadmap, notes, settings
+  app/(auth)/login    magic-link sign-in
+  app/auth/callback   magic-link code exchange
+  components/          design-system primitives, layout shell, feature views
+  content/            static curriculum (roadmap, note topics, DSA patterns)
+  lib/supabase/       browser + server Supabase clients
+  lib/data/           server-side read helpers
+  lib/actions/        server actions (auth-checked mutations)
+  lib/srs.ts          SM-2 spaced-repetition engine
+  proxy.ts            session refresh + route protection (Next.js 16 "proxy")
+supabase/migrations/  SQL schema + Row-Level Security policies
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

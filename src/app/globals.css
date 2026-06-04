@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
+/* Class/attribute-based dark mode driven by <html data-theme="…"> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ============================================================
+   Design tokens — source of truth: /DESIGN.md ("Quiet Tool")
+   Raw CSS variables swap per theme; @theme maps them to Tailwind
+   semantic color utilities (bg-surface, text-muted, border-border…).
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --canvas: #ffffff;
+  --sidebar: #fbfbfc;
+  --surface: #ffffff;
+  --hover: #f3f3f5;
+  --fg: #0c0c0e;
+  --muted: #6b6b73;
+  --faint: #9a9aa2;
+  --border: #e7e7eb;
+  --border-strong: #dadae0;
+  --track: #eeeef1;
+  --ink: #111114;
+  --on-ink: #ffffff;
+  --ink-weak: #f4f4f6;
+  --signal: #2f6feb;
+  --signal-weak: #eaf1fe;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0c0d10;
+  --sidebar: #0e0f13;
+  --surface: #141519;
+  --hover: #1a1b21;
+  --fg: #ededf0;
+  --muted: #9395a0;
+  --faint: #65676f;
+  --border: #24262c;
+  --border-strong: #30323a;
+  --track: #23252b;
+  --ink: #f2f2f4;
+  --on-ink: #0c0d10;
+  --ink-weak: #1c1d23;
+  --signal: #5b8cff;
+  --signal-weak: #16213c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts — variables set by next/font on <html> (see layout.tsx) */
+  --font-sans: var(--ff-body);
+  --font-display: var(--ff-display);
+  --font-mono: var(--ff-mono);
+
+  /* Semantic colors → utilities */
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-hover: var(--hover);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-track: var(--track);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-ink-weak: var(--ink-weak);
+  --color-signal: var(--signal);
+  --color-signal-weak: var(--signal-weak);
+
+  /* Radii (DESIGN.md) */
+  --radius-frame: 12px;
+  --radius-card: 9px;
+  --radius-control: 7px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  /* Default any border to our token instead of Tailwind v4's currentColor. */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--canvas);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Smooth, quick theme transition (respects reduced-motion). */
+  @media (prefers-reduced-motion: no-preference) {
+    body {
+      transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+    }
+  }
 }
