@@ -32,6 +32,7 @@ import { coreMlTrack, coreMlGuided } from "@/content/ml/core";
 import { deepLearningTrack, deepLearningGuided } from "@/content/ml/deeplearning";
 import { llmsTrack, llmsGuided } from "@/content/ml/llms";
 import { mlopsTrack, mlopsGuided } from "@/content/ml/mlops";
+import { mlFlashcards, mlPredict } from "@/content/ml/cards";
 
 export const TRACKS: Track[] = [
   pythonTrack,
@@ -71,12 +72,14 @@ export const ALL_FLASHCARDS: Flashcard[] = [
   ...foundationsFlashcards,
   ...treesSortingFlashcards,
   ...graphsDpFlashcards,
+  ...mlFlashcards,
 ];
 export const ALL_PREDICT: PredictOutput[] = [
   ...pythonPredict,
   ...foundationsPredict,
   ...treesSortingPredict,
   ...graphsDpPredict,
+  ...mlPredict,
 ];
 
 /** Review items in pedagogical order: per lesson, its flashcards then its predicts. */
