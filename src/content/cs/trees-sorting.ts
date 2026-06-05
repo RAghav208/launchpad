@@ -1,0 +1,141 @@
+import type { Track, Flashcard, PredictOutput } from "@/content/types";
+
+export const treesSortingTrack: Track = {
+  id: "cs-trees-sorting",
+  title: "Search, Trees & Sorting",
+  modules: [
+    {
+      id: "cs-searching",
+      title: "Searching",
+      lessons: [
+        {
+          id: "binary-search",
+          title: "Binary search",
+          summary: "Find an item in a sorted list by halving the search space.",
+          blocks: [
+            { kind: "prose", text: "Binary search is the classic payoff of sorted data: it finds anything in a million-item list in about 20 steps. Get comfortable with the bounds and it becomes second nature." },
+            { kind: "heading", text: "The idea" },
+            { kind: "prose", text: "Look at the middle item. If it is your target, done. If it is too small, the answer must be in the right half, so throw the left half away. Too big, throw the right half away. Repeat on what is left." },
+            { kind: "code", lang: "python", code: "def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target:\n            return mid\n        if arr[mid] < target:\n            lo = mid + 1   # answer is in the right half\n        else:\n            hi = mid - 1   # answer is in the left half\n    return -1              # not found" },
+            { kind: "heading", text: "Walking through it" },
+            { kind: "prose", text: "Trace searching for 7 in `[1, 3, 5, 7, 9]`. Watch `lo`, `hi`, and `mid` close in on the answer:" },
+            { kind: "code", lang: "python", code: "# search 7 in [1, 3, 5, 7, 9]\n# lo=0 hi=4 mid=2 -> arr[2]=5 < 7, go right, lo=3\n# lo=3 hi=4 mid=3 -> arr[3]=7  found, return 3" },
+            { kind: "heading", text: "Why it is O(log n)" },
+            { kind: "prose", text: "Each step throws away half of what remains. Halving a million takes about 20 steps, halving a billion about 30. That is the magic of `O(log n)`." },
+            { kind: "callout", tone: "warn", text: "Binary search only works on sorted data. The tricky bugs are off-by-one errors around `lo`, `hi`, and `mid`, so trace small examples by hand until the bounds feel natural." },
+            { kind: "keypoints", points: ["Requires sorted input", "Compare the middle, then discard half", "Track `lo` / `hi` bounds and compute `mid`", "Runs in `O(log n)`", "About 20 steps for a million items", "Watch for off-by-one bugs in the bounds"] },
+            { kind: "practice", text: "Work it through:", items: ["Trace `binary_search([2, 4, 6, 8, 10], 4)`: list lo, hi, mid at each step.", "What does the function return when the target is not present?", "Why would binary search give wrong answers on an unsorted list?", "Stretch: roughly how many steps to find an item among 1,000,000 sorted items?"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "cs-trees",
+      title: "Trees",
+      lessons: [
+        {
+          id: "trees-intro",
+          title: "Trees & traversals",
+          summary: "Hierarchical nodes, and the orders you can visit them in.",
+          blocks: [
+            { kind: "prose", text: "Trees model hierarchy: file systems, org charts, comment threads, the HTML on this page. Once you can walk a tree, a whole class of problems opens up." },
+            { kind: "heading", text: "Anatomy of a tree" },
+            { kind: "prose", text: "A tree has one `root` at the top. Each node points to children; nodes with no children are `leaves`. A *binary* tree gives each node at most two children, `left` and `right`." },
+            { kind: "code", lang: "python", code: "class Node:\n    def __init__(self, value):\n        self.value = value\n        self.left = None\n        self.right = None\n\n#      1        <- root\n#     / \\\n#    2   3      <- leaves\nroot = Node(1)\nroot.left = Node(2)\nroot.right = Node(3)" },
+            { kind: "heading", text: "Depth-first traversal" },
+            { kind: "prose", text: "Depth-first goes as deep as it can before backing up. It comes in three flavours that differ only in *when* you visit the node versus its children: pre-order (node first), in-order (left, node, right), post-order (children first)." },
+            { kind: "code", lang: "python", code: "def inorder(node):\n    if node is None:\n        return\n    inorder(node.left)\n    print(node.value)     # visit between the two children\n    inorder(node.right)\n\ninorder(root)   # 2, 1, 3" },
+            { kind: "heading", text: "Breadth-first traversal" },
+            { kind: "prose", text: "Breadth-first visits the tree level by level, top to bottom. It uses a queue: take a node, print it, enqueue its children, repeat." },
+            { kind: "code", lang: "python", code: "from collections import deque\n\ndef bfs(root):\n    queue = deque([root])\n    while queue:\n        node = queue.popleft()\n        print(node.value)\n        if node.left:\n            queue.append(node.left)\n        if node.right:\n            queue.append(node.right)" },
+            { kind: "callout", tone: "note", text: "In-order traversal of a binary search tree visits values in sorted order. That is a favourite interview fact, and the subject of the next lesson." },
+            { kind: "keypoints", points: ["A tree has one root; binary nodes have `left`/`right`", "Leaves are nodes with no children", "Depth-first orders: pre-order, in-order, post-order (recursive)", "Breadth-first (level-order) uses a queue", "In-order on a BST yields sorted values"] },
+            { kind: "practice", text: "Practise traversals:", items: ["Add a `preorder` that prints the node *before* its children. What order results?", "For the tree above, write out the in-order and pre-order sequences by hand.", "Explain when you would prefer BFS over DFS.", "Stretch: write a function that counts the number of nodes in a tree."] },
+          ],
+        },
+        {
+          id: "bst",
+          title: "Binary search trees",
+          summary: "A tree that keeps values ordered for fast lookup.",
+          blocks: [
+            { kind: "prose", text: "A binary search tree (BST) adds one rule to a binary tree, and that rule makes search feel like binary search: everything smaller goes left, everything larger goes right." },
+            { kind: "heading", text: "The ordering rule" },
+            { kind: "prose", text: "At *every* node: the entire left subtree holds smaller values, the entire right subtree holds larger values. So at each step you can rule out half the tree." },
+            { kind: "code", lang: "python", code: "def insert(node, value):\n    if node is None:\n        return Node(value)\n    if value < node.value:\n        node.left = insert(node.left, value)\n    else:\n        node.right = insert(node.right, value)\n    return node" },
+            { kind: "heading", text: "Searching" },
+            { kind: "prose", text: "To find a value, compare and walk left or right, just like binary search on an array." },
+            { kind: "code", lang: "python", code: "def contains(node, value):\n    if node is None:\n        return False\n    if value == node.value:\n        return True\n    if value < node.value:\n        return contains(node.left, value)\n    return contains(node.right, value)" },
+            { kind: "heading", text: "Balance matters" },
+            { kind: "prose", text: "When the tree is balanced, search and insert are `O(log n)`. But if you insert already-sorted data, every node hangs off to one side and it degenerates into a linked list: `O(n)`." },
+            { kind: "callout", tone: "note", text: "That degenerate case is exactly why self-balancing trees (AVL, red-black) exist. They rearrange themselves to stay shallow and guarantee O(log n)." },
+            { kind: "prose", text: "One elegant consequence of the ordering rule: an in-order traversal of a BST returns its values in sorted order, for free." },
+            { kind: "keypoints", points: ["Left subtree < node < right subtree, at every node", "Search/insert is `O(log n)` when balanced", "Inserting sorted data degenerates to a chain: `O(n)`", "Self-balancing trees keep it `O(log n)`", "In-order traversal returns values sorted"] },
+            { kind: "practice", text: "Build intuition:", items: ["Insert 5, 3, 8, 1 into an empty BST in that order. Sketch the tree.", "List the in-order traversal of your tree, and confirm it is sorted.", "Trace `contains(root, 8)`: which way does it walk at each step?", "Stretch: what does the tree look like if you insert 1, 2, 3, 4 in order, and why is that slow?"] },
+          ],
+        },
+      ],
+    },
+    {
+      id: "cs-sorting",
+      title: "Sorting & heaps",
+      lessons: [
+        {
+          id: "sorting",
+          title: "Sorting",
+          summary: "The key sorts, their costs, and Python's built-ins.",
+          blocks: [
+            { kind: "prose", text: "Sorting shows up everywhere, and it is a favourite interview topic because the good algorithms teach the divide-and-conquer mindset." },
+            { kind: "heading", text: "Slow sorts vs fast sorts" },
+            { kind: "prose", text: "Simple sorts like bubble and insertion sort compare neighbours and are `O(n^2)`: fine for tiny lists, painful for big ones. The workhorses, merge sort and quicksort, are `O(n log n)`." },
+            { kind: "heading", text: "The merge sort idea" },
+            { kind: "prose", text: "Merge sort splits the list in half, sorts each half (by splitting again, all the way down), then merges the sorted halves back together. The splitting gives the `log n`, the merging gives the `n`." },
+            { kind: "code", lang: "python", code: "# [5, 2, 8, 1]\n# split   -> [5, 2]      [8, 1]\n# split   -> [5][2]      [8][1]\n# merge   -> [2, 5]      [1, 8]\n# merge   -> [1, 2, 5, 8]" },
+            { kind: "heading", text: "Python's built-in sort" },
+            { kind: "prose", text: "In real code you almost never write the algorithm yourself: `sorted()` returns a new list and `list.sort()` sorts in place. Both are fast and stable, and take `key=` and `reverse=`." },
+            { kind: "code", lang: "python", code: "nums = [5, 2, 8, 1, 9]\nprint(sorted(nums))                # [1, 2, 5, 8, 9]\nprint(sorted(nums, reverse=True))  # [9, 8, 5, 2, 1]\n\nwords = [\"pear\", \"fig\", \"apple\"]\nprint(sorted(words, key=len))      # ['fig', 'pear', 'apple']" },
+            { kind: "callout", tone: "tip", text: "Reach for sorted() or list.sort() in real code. Learn merge sort and quicksort for interviews and for the divide-and-conquer intuition they build." },
+            { kind: "keypoints", points: ["Bubble/insertion sort: `O(n^2)`", "Merge sort & quicksort: `O(n log n)`", "Merge sort = split, sort halves, merge", "`sorted(seq)` returns a new list; `list.sort()` is in place", "Customize with `key=` and `reverse=`"] },
+            { kind: "practice", text: "Sort some data:", items: ["Sort `[5, 2, 8, 1]` ascending and descending with `sorted`.", "Sort the words ['banana', 'kiwi', 'apple'] by length, then alphabetically.", "On paper, run merge sort's split-and-merge on `[3, 1, 2]`.", "Stretch: why is `O(n log n)` better than `O(n^2)` for a list of 1,000,000 items?"] },
+          ],
+        },
+        {
+          id: "heaps",
+          title: "Heaps & priority queues",
+          summary: "Always grab the smallest (or largest) item fast.",
+          blocks: [
+            { kind: "prose", text: "When you repeatedly need the smallest (or largest) item from a changing collection, re-sorting every time is wasteful. A heap keeps that item ready in `O(log n)`." },
+            { kind: "heading", text: "What a heap gives you" },
+            { kind: "prose", text: "A heap is a tree-shaped structure that always keeps the smallest item on top. You can peek at it in `O(1)` and pop it in `O(log n)`, and pushing a new item is `O(log n)` too." },
+            { kind: "code", lang: "python", code: "import heapq\n\nnums = [5, 2, 8, 1]\nheapq.heapify(nums)          # rearrange into a min-heap, in place\nprint(heapq.heappop(nums))   # 1  (smallest comes out first)\nheapq.heappush(nums, 0)\nprint(heapq.heappop(nums))   # 0" },
+            { kind: "heading", text: "Priority queues and top-k" },
+            { kind: "prose", text: "A heap is how you build a priority queue: always handle the most urgent item next. It is also the tidy way to answer 'what are the k smallest/largest?'." },
+            { kind: "code", lang: "python", code: "import heapq\n\nnums = [5, 1, 8, 3, 9, 2]\nprint(heapq.nsmallest(3, nums))   # [1, 2, 3]\nprint(heapq.nlargest(2, nums))    # [9, 8]" },
+            { kind: "callout", tone: "note", text: "Python's heapq is a min-heap (smallest on top). For a max-heap, push the negatives of your values and negate again when you pop." },
+            { kind: "keypoints", points: ["A heap pops the min in `O(log n)`, peeks in `O(1)`", "`heapq` works on a plain list: `heapify`, `heappush`, `heappop`", "Python's heapq is a min-heap", "Use it for priority queues and top-k problems", "For a max-heap, negate the values"] },
+            { kind: "practice", text: "Use heapq:", items: ["Heapify `[7, 3, 9, 1, 5]` and pop twice to get the two smallest.", "Use `nlargest` to find the 3 biggest numbers in a list.", "Explain why a heap beats calling `sorted()` every time you need the min.", "Stretch: how would you use negation to always pop the *largest* item?"] },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const treesSortingFlashcards: Flashcard[] = [
+  { id: "binary-search-fc-1", lessonId: "binary-search", front: "What does binary search require of its input?", back: "It must be sorted. Each step compares the middle and discards half the range." },
+  { id: "binary-search-fc-2", lessonId: "binary-search", front: "Time complexity of binary search?", back: "`O(log n)` — the search space halves every step." },
+  { id: "trees-intro-fc-1", lessonId: "trees-intro", front: "Name the three depth-first tree traversals.", back: "Pre-order, in-order, and post-order — they differ in when the node is visited vs its children." },
+  { id: "trees-intro-fc-2", lessonId: "trees-intro", front: "What does breadth-first (level-order) traversal use?", back: "A queue: visit a node, enqueue its children, repeat row by row." },
+  { id: "bst-fc-1", lessonId: "bst", front: "State the binary search tree rule.", back: "For every node, the left subtree holds smaller values and the right subtree holds larger values." },
+  { id: "bst-fc-2", lessonId: "bst", front: "Search cost in a balanced vs degenerate BST?", back: "`O(log n)` balanced; `O(n)` if it degenerates into a chain (e.g. inserting sorted data)." },
+  { id: "sorting-fc-1", lessonId: "sorting", front: "Time complexity of merge sort and quicksort (average)?", back: "`O(n log n)`." },
+  { id: "sorting-fc-2", lessonId: "sorting", front: "How do you sort in Python without writing the algorithm?", back: "`sorted(seq)` for a new list or `list.sort()` in place; pass `key=` and `reverse=` to customize." },
+  { id: "heaps-fc-1", lessonId: "heaps", front: "What is a heap good for?", back: "A priority queue: pop the smallest (min-heap) or largest item in `O(log n)`." },
+  { id: "heaps-fc-2", lessonId: "heaps", front: "Which Python module implements a heap?", back: "`heapq` — `heapify`, `heappush`, `heappop` over a plain list (min-heap)." },
+];
+
+export const treesSortingPredict: PredictOutput[] = [
+  { id: "binary-search-po-1", lessonId: "binary-search", code: "def bsearch(arr, t):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == t:\n            return mid\n        if arr[mid] < t:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1\n\nprint(bsearch([2, 4, 6, 8], 6))", options: ["2", "3", "6", "-1"], answer: 0, explanation: "6 sits at index 2. Binary search finds it by checking the middle and narrowing the range." },
+  { id: "trees-intro-po-1", lessonId: "trees-intro", code: "class Node:\n    def __init__(self, v):\n        self.v = v\n        self.left = None\n        self.right = None\n\nroot = Node(1)\nroot.left = Node(2)\nroot.right = Node(3)\n\nout = []\ndef inorder(n):\n    if n:\n        inorder(n.left)\n        out.append(n.v)\n        inorder(n.right)\n\ninorder(root)\nprint(out)", options: ["[2, 1, 3]", "[1, 2, 3]", "[1, 3, 2]", "[2, 3, 1]"], answer: 0, explanation: "In-order visits left, then node, then right: 2, then 1, then 3." },
+  { id: "sorting-po-1", lessonId: "sorting", code: "print(sorted([3, 1, 2], reverse=True))", options: ["[3, 2, 1]", "[1, 2, 3]", "[3, 1, 2]", "Error"], answer: 0, explanation: "sorted ascending is [1, 2, 3]; reverse=True flips it to [3, 2, 1]." },
+  { id: "heaps-po-1", lessonId: "heaps", code: "import heapq\nxs = [5, 1, 3]\nheapq.heapify(xs)\nprint(heapq.heappop(xs))", options: ["1", "5", "3", "[1, 3, 5]"], answer: 0, explanation: "A min-heap keeps the smallest on top, so heappop returns 1 first." },
+];

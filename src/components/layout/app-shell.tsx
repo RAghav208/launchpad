@@ -16,10 +16,12 @@ function writeCookie(collapsed: boolean) {
 export function AppShell({
   defaultCollapsed,
   pomodoro,
+  practiceDue,
   children,
 }: {
   defaultCollapsed: boolean;
   pomodoro: PomodoroConfig;
+  practiceDue?: number;
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsedState] = useState(defaultCollapsed);
@@ -50,11 +52,11 @@ export function AppShell({
 
   return (
     <SidebarContext.Provider value={{ collapsed, toggle, setCollapsed }}>
-      <div className="flex min-h-dvh">
-        <Sidebar />
+      <div className="flex h-dvh overflow-hidden">
+        <Sidebar practiceDue={practiceDue} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header pomodoro={pomodoro} />
-          <main className="flex-1 px-6 py-7 md:px-8">{children}</main>
+          <main className="flex-1 overflow-y-auto px-6 py-7 md:px-8">{children}</main>
         </div>
       </div>
     </SidebarContext.Provider>

@@ -24,3 +24,12 @@ export async function getStudyTotals(): Promise<StudyTotals> {
 
   return { todayMinutes, weekMinutes };
 }
+
+/** Distinct dates (ISO, ascending) the user logged any study time (RLS-scoped). */
+export async function getStudyDays(): Promise<string[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.from("study_sessions").select("occurred_on");
+  const set = new Set<string>();
+  for (const row of data ?? []) set.add(row.occurred_on as string);
+  return [...set].sort();
+}

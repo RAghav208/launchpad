@@ -21,7 +21,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: DashboardIcon },
   { href: "/learn", label: "Learn", icon: LearnIcon },
-  { href: "/practice", label: "Practice", icon: PracticeIcon, badge: 12 },
+  { href: "/practice", label: "Practice", icon: PracticeIcon },
   { href: "/dsa", label: "DSA Log", icon: DsaIcon },
   { href: "/roadmap", label: "Roadmap", icon: RoadmapIcon },
   { href: "/notes", label: "Notes", icon: NotesIcon },

@@ -6,7 +6,7 @@ import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/cn";
 import { useSidebar } from "@/components/layout/sidebar-context";
 
-export function Sidebar() {
+export function Sidebar({ practiceDue = 0 }: { practiceDue?: number }) {
   const pathname = usePathname();
   const { collapsed } = useSidebar();
 
@@ -21,7 +21,7 @@ export function Sidebar() {
       )}
     >
       {/* Fixed-width inner so content doesn't reflow while the aside width animates. */}
-      <div className="flex h-full w-60 flex-col p-4">
+      <div className="flex h-full w-60 flex-col overflow-y-auto p-4">
         <div className="flex items-center gap-2 px-2 pb-6 font-display text-lg font-semibold tracking-tight">
           <span className="text-signal">◆</span> Launchpad
         </div>
@@ -31,6 +31,8 @@ export function Sidebar() {
             const Icon = item.icon;
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const badge =
+              item.href === "/practice" ? practiceDue : item.badge ?? 0;
 
             return (
               <Link
@@ -49,9 +51,9 @@ export function Sidebar() {
                 )}
                 <Icon className="size-4 opacity-90" />
                 {item.label}
-                {item.badge ? (
+                {badge > 0 ? (
                   <span className="ml-auto rounded-full bg-signal-weak px-1.5 py-0.5 font-mono text-[10.5px] font-medium text-signal">
-                    {item.badge}
+                    {badge}
                   </span>
                 ) : null}
               </Link>

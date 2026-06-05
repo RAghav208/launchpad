@@ -10,21 +10,29 @@
    ============================================================ */
 :root {
   color-scheme: light;
-  --canvas: #ffffff;
-  --sidebar: #fbfbfc;
+  --canvas: #f6f7f9;
+  --sidebar: #f1f2f5;
   --surface: #ffffff;
-  --hover: #f3f3f5;
+  --hover: #ebedf1;
   --fg: #0c0c0e;
   --muted: #6b6b73;
   --faint: #9a9aa2;
-  --border: #e7e7eb;
-  --border-strong: #dadae0;
-  --track: #eeeef1;
+  --border: #e4e7ec;
+  --border-strong: #d4d8df;
+  --track: #e9ebf0;
   --ink: #111114;
   --on-ink: #ffffff;
-  --ink-weak: #f4f4f6;
+  --ink-weak: #eaecf1;
   --signal: #2f6feb;
   --signal-weak: #eaf1fe;
+
+  /* code syntax */
+  --code-bg: #eceef2;
+  --code-com: #8a8f98;
+  --code-kw: #8250df;
+  --code-str: #1a7f37;
+  --code-num: #b5532a;
+  --code-fn: #1f6feb;
 }
 
 [data-theme="dark"] {
@@ -44,6 +52,14 @@
   --ink-weak: #1c1d23;
   --signal: #5b8cff;
   --signal-weak: #16213c;
+
+  /* code syntax */
+  --code-bg: #16171b;
+  --code-com: #7d8590;
+  --code-kw: #d2a8ff;
+  --code-str: #7ee787;
+  --code-num: #ffa657;
+  --code-fn: #79c0ff;
 }
 
 @theme inline {
@@ -68,6 +84,14 @@
   --color-ink-weak: var(--ink-weak);
   --color-signal: var(--signal);
   --color-signal-weak: var(--signal-weak);
+
+  /* code syntax */
+  --color-code-bg: var(--code-bg);
+  --color-code-com: var(--code-com);
+  --color-code-kw: var(--code-kw);
+  --color-code-str: var(--code-str);
+  --color-code-num: var(--code-num);
+  --color-code-fn: var(--code-fn);
 
   /* Radii (DESIGN.md) */
   --radius-frame: 12px;
